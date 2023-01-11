@@ -61,8 +61,11 @@ void setup() {
  xTaskCreatePinnedToCore(tx_in,  "txin",  2048, NULL, 221, NULL, 1);//
  xTaskCreatePinnedToCore(tx_out, "txout", 2048, NULL, 109, NULL, 1);//
  xTaskCreatePinnedToCore(tx_dsp, "txdsp", 2048, NULL, 219, NULL, 0);//
-
- tft.init(tft.MODE480x272,R0,R1,G0,G1,B0,B1,HSYNCPIN,DEPIN,CLOCKPIN);
+ #ifdef VGA
+  tft.init(myMode,R0,R1,G0,G1,B0,B1,HSYNCPIN,DEPIN);
+ #else
+  tft.init(tft.MODE480x272,R0,R1,G0,G1,B0,B1,HSYNCPIN,DEPIN,CLOCKPIN);
+ #endif
  start_ok();//нажатие энкодера во время заставки вызывает экран настройки кнопок
  //нажатие энкодера во время приема сохраняет основные настройки для их восстановления при последующем включении
 }

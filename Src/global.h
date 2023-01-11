@@ -1,12 +1,15 @@
 #define VERSION "v1.0"
 
 
-#define LCD_DE  //Для дисплея с синхронизацией DE-only.Если дисплей синхронизируется через Hsync/Vsync, то закомментировать
+//#define LCD_DE  //Для дисплея с синхронизацией DE-only.Если дисплей синхронизируется через Hsync/Vsync, то закомментировать
+#define VGA     //Если VGA - раскомментировать, а #define LCD_DE - закомментировать
 
 #ifdef LCD_DE
   #include "lcd/LCD6BitI.h"    //драйвер дисплея 4,3",480x272,LB043WQ2-TD01 (sync DE) https://github.com/Cvarc-Xtal/esp32tft24
 #else
-  #include "lcd/LCD6BitIS.h"   //драйвер дисплея 4,3",480x272,LMS430HF02 (sync HSync/VSync) https://github.com/Cvarc-Xtal/esp32tft24
+  #ifndef VGA
+    #include "lcd/LCD6BitIS.h"   //драйвер дисплея 4,3",480x272,LMS430HF02 (sync HSync/VSync) https://github.com/Cvarc-Xtal/esp32tft24
+  #endif  
 #endif
 
 //Возможен вариант с VGA дисплеем с максимальным разрешение до 500x300 (ограничение по размеру памяти)
@@ -68,14 +71,20 @@ void start_ok();
 
 #ifdef  LCD_DE
   LCD6BitI tft; //
-  GfxWrapper<LCD6BitI> gfx(tft,480,272); //включение совместимости с GFX-Adafruit можно использовать все функции GFX-Adafruit через класс gfx.
                                 //hfront,hsync,hback,pixels,vfront,vsync,vback,lines,divy,pixelclock,hpolaritynegative,vpolaritynegative
   const Mode LCD6BitI::MODE480x272(0, 48,  0, 480,  0, 14, 0, 272, 1, 0, 1, 1); //для LB043WQ2-TD01 sync DE only
+  GfxWrapper<LCD6BitI> gfx(tft,480,272); //включение совместимости с GFX-Adafruit можно использовать все функции GFX-Adafruit через класс gfx.
 #else
-  LCD6BitIS tft;
-  GfxWrapper<LCD6BitIS> gfx(tft,480,272); //включение совместимости с GFX-Adafruit можно использовать все функции GFX-Adafruit через класс gfx.
+  #ifdef VGA
+    VGA6Bit tft;
+    Mode myMode = tft.MODE640x480.custom(480,272);
+    GfxWrapper<VGA6Bit> gfx(tft,480,272);
+  #else
+    LCD6BitIS tft;
                                  //hfront,hsync,hback,pixels,vfront,vsync,vback,lines,divy,pixelclock,hpolaritynegative,vpolaritynegative
-  const Mode LCD6BitIS::MODE480x272(0, 54, 42, 480, 1, 2, 12, 272, 1, 0, 0, 0); //для LMS430HF02 sync Hsync/Vsync
+    const Mode LCD6BitIS::MODE480x272(0, 54, 42, 480, 1, 2, 12, 272, 1, 0, 0, 0); //для LMS430HF02 sync Hsync/Vsync
+    GfxWrapper<LCD6BitIS> gfx(tft,480,272); //включение совместимости с GFX-Adafruit можно использовать все функции GFX-Adafruit через класс gfx.
+  #endif
 #endif
 
 //подключение дисплея-(тач не используется)
