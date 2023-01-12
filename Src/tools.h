@@ -76,12 +76,15 @@ void time1(){
       if(show_band_time<0)show_band_time=-1;
       write_parameters();
       //ag(); //АРУ по входу кодека
-      //Serial.print("xRX :");Serial.println(r_rx);
-      //Serial.print("xDSP:");Serial.println(r_dsp);
-      //Serial.print("xOUT:");Serial.println(cycl_result_out);
-      //Serial.print("xDRAW:");Serial.println(cycl_result_draw);
-      //Serial.print("xCNTR:");Serial.println(cycl_result_cntr);
-
+      #ifdef DEBUG_RUN
+        Serial.print("RX_IN wait time: ");Serial.println(rx_in_wait_result);
+        Serial.print("RX_IN run time:  ");Serial.println(rx_in_run_result);
+        Serial.print("RX_DSP wait time: ");Serial.println(rx_dsp_wait_result);
+        Serial.print("RX_DSP run time:  ");Serial.println(rx_dsp_run_result);
+        Serial.print("RX_OUT wait time: ");Serial.println(rx_out_wait_result);
+        Serial.print("RX_OUT run time:  ");Serial.println(rx_out_run_result);
+        access_in_wait=access_in_run=access_dsp_wait=access_dsp_run=access_out_wait=access_out_run=true;
+      #endif
   }
 }
 //опрос и обработка кнопок

@@ -12,7 +12,7 @@
   #endif  
 #endif
 
-//Возможен вариант с VGA дисплеем с максимальным разрешение до 500x300 (ограничение по размеру памяти)
+#define DEBUG_RUN
 
 typedef struct FIR {
     float  *coeffs;
@@ -297,3 +297,14 @@ struct band bands[N_BANDS] = {
   24920000,"12M ",AM, 3,
   28350000,"10M ",USB,0
 };
+/////////////////////////////
+// test variable
+#ifdef DEBUG_RUN
+  int rx_in_wait_result,rx_in_run_result;
+  int rx_dsp_wait_result,rx_dsp_run_result;
+  int rx_out_wait_result,rx_out_run_result;
+  bool access_in_wait,access_in_run;
+  bool access_dsp_wait,access_dsp_run;
+  bool access_out_wait,access_out_run;
+#endif
+

@@ -9,7 +9,14 @@ void IRAM_ATTR rx_in(void * pvParameters){
   size_t readsize = 0;
   
   while (true) {
+          #ifdef DEBUG_RUN 
+            int rx_time = micros();
+          #endif
           xSemaphoreTake(xRXIN, portMAX_DELAY);//ждем сигнала от dsp-обработчика о готвности премного буфера для приема след.партии отсчетов
+          #ifdef DEBUG_RUN 
+            if (access_in_wait){rx_in_wait_result = micros()-rx_time;access_in_wait=false;}
+            rx_time = micros();
+          #endif
           //копирование ранее принятых отсчетов из старшей части рабочего буфера в младшую (50% overlap&save)
           for (int i=0;i<NUM_SAMPLE_BUF;i++){
             workbuf_in[i].re = workbuf_tmp[i].re;
@@ -23,6 +30,9 @@ void IRAM_ATTR rx_in(void * pvParameters){
             fft[i] = ((workbuf_tmp[i].re+workbuf_tmp[i].im));//заполняем fft-буфер для панорамы и спектра
           }
           fft_for_display((float*)&fft);//вычислить магнитуды для спектра и "водопада" для последующего отображения
+          #ifdef DEBUG_RUN 
+            if (access_in_run){rx_in_run_result = micros()-rx_time;access_in_run=false;}
+          #endif
           if(current_mode==RX_MODE){xSemaphoreGive(xRXDSP);}//разрешаем демодуляцию и фильтрацию рабочего буфера
   }
 }
@@ -30,13 +40,23 @@ void IRAM_ATTR rx_in(void * pvParameters){
 void IRAM_ATTR rx_out(void * pvParameters){
   size_t readsize = 0;
   while(true){
-          xSemaphoreTake(xRXOUT, portMAX_DELAY);//ждем окончания dsp-обработки 
+          #ifdef DEBUG_RUN 
+            int rx_time = micros();
+          #endif
+          xSemaphoreTake(xRXOUT, portMAX_DELAY);//ждем окончания dsp-обработки
+          #ifdef DEBUG_RUN 
+             if (access_out_wait){rx_out_wait_result = micros()-rx_time;access_out_wait=false;}
+             rx_time = micros();
+          #endif
           if(!agc)agc_koeff=1.0f;//
           for (int i=0; i<NUM_SAMPLE_BUF; i++) { //переносим обработанный массив в выходной буфер с нормализацией в I2S-формат
             output_buffer[i].re = speak_out ? ((int)(workbuf_out[i].re*agc_koeff))<<12: 0;
             output_buffer[i].im = speak_out ? ((int)(workbuf_out[i].im*agc_koeff))<<12: 0;
           }
           if(current_mode==RX_MODE)i2s_write(I2S_NUM_0, &output_buffer, sizeof(output_buffer), &readsize, portMAX_DELAY );//вывод звука
+          #ifdef DEBUG_RUN 
+            if (access_out_run){rx_out_run_result = micros()-rx_time;access_out_run=false;}
+          #endif
   }
 }
 
@@ -91,7 +111,14 @@ void IRAM_ATTR get_am(struct COMPLEX* input){
 void IRAM_ATTR rx_dsp(void *pvParameters){
     
     while(true){
+          #ifdef DEBUG_RUN 
+            int rx_time = micros();
+          #endif
           xSemaphoreTake(xRXDSP, portMAX_DELAY);//ждем сигнала о готвности приемного буфера
+          #ifdef DEBUG_RUN 
+            if (access_dsp_wait){rx_dsp_wait_result = micros()-rx_time;access_dsp_wait=false;}
+            rx_time = micros();
+          #endif
           init_filters (num_filter);
           if(rf_mode!= AM)
           {
@@ -106,6 +133,9 @@ void IRAM_ATTR rx_dsp(void *pvParameters){
           }
           fir_f32(&fir_rx, (float*)&workbuf_in, (float*)&workbuf_out, NUM_FFT_BUF);//основной фильтр
           //разрешаем выводить звук и  прием след.партии отсчетов
+          #ifdef DEBUG_RUN 
+            if (access_dsp_run){rx_dsp_run_result = micros()-rx_time;access_dsp_run=false;}
+          #endif
           if(current_mode == RX_MODE){xSemaphoreGive(xRXIN);xSemaphoreGive(xRXOUT);} 
           if (smeter > old_smeter){old_smeter=smeter;}
           if(old_smeter>70)old_smeter=70;

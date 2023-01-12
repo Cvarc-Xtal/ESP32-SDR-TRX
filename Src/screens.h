@@ -127,11 +127,27 @@ void draw_band(){
   }
    
 }
+#ifdef DEBUG_RUN
+void draw_debug(){
+    tft.setTextColor(WHITE,BLACK);
+    tft.setCursor(330,75);tft.print("Tasks(wait/run) uS");
+    tft.setCursor(330,97);tft.print("Rx_in: ");
+    tft.print(rx_in_wait_result);tft.print("/");tft.print(rx_in_run_result);tft.print("   ");
+    tft.setCursor(330,119);tft.print("Rx_dsp:");
+    tft.print(rx_dsp_wait_result);tft.print("/");tft.print(rx_dsp_run_result);tft.print("   ");
+    tft.setCursor(330,141);tft.print("Rx_out:");
+    tft.print(rx_out_wait_result);tft.print("/");tft.print(rx_out_run_result);tft.print("   ");
+    
+}
+#endif
 void rx_display(){
    if(redraw){tft.clear(0);redraw=false;}
    draw_spectr();    //отобразить спектр
    draw_band();
    draw_Grid(0,72,480,105);
+   #ifdef DEBUG_RUN
+    draw_debug();
+   #endif
    draw_waterfall(); //отобразить "водопад"
    draw_service();   //отобразить остальное
    tft.show();
