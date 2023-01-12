@@ -298,7 +298,7 @@ struct band bands[N_BANDS] = {
   28350000,"10M ",USB,0
 };
 /////////////////////////////
-// test variable
+// debug variables
 #ifdef DEBUG_RUN
   int rx_in_wait_result,rx_in_run_result;
   int rx_dsp_wait_result,rx_dsp_run_result;
