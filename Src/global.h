@@ -12,9 +12,9 @@
   #endif  
 #endif
 
-#define DEBUG_RUN
+//#define DEBUG_RUN
 
-typedef struct FIR {
+struct FIR {
     float  *coeffs;
     float  *delay;
     int     N;
@@ -91,12 +91,12 @@ void start_ok();
 #ifdef  LCD_DE
 //пины ESP32         |пины lcd LB043WQ2-TD01
 //-------------------|-------------------------------
-#define R0       21    // 5+7+9+11 мл.разряд красного
-#define R1       19    // 6+8+10+12 ст.разряд красного
-#define G0       18    // 13+15+17+19 мл.разряд зеленого
-#define G1        5    // 20+22+24+26 ст.разряд зеленого
-#define B0       17    // 21+23+25+27 мл.разряд синего
-#define B1       16    // 22+24+26+28 ст.разряд синего
+#define RED0       21    // 5+7+9+11 мл.разряд красного
+#define RED1       19    // 6+8+10+12 ст.разряд красного
+#define GREEN0     18    // 13+15+17+19 мл.разряд зеленого
+#define GREEN1      5    // 20+22+24+26 ст.разряд зеленого
+#define BLUE0      17    // 21+23+25+27 мл.разряд синего
+#define BLUE1      16    // 22+24+26+28 ст.разряд синего
 #define HSYNCPIN -1    // не выделять пин для hsync
 #define DEPIN    15    // 34 Синхронизация без hSync/vSync. Только DE
 #define CLOCKPIN  4    // 30 clock
@@ -105,12 +105,12 @@ void start_ok();
 
 //пины ESP32         |пины lcd LMS430HF02
 //-------------------|-------------------------------
-#define R0       21    // 5+7+9+11 мл.разряд красного
-#define R1       19    // 6+8+10+12 ст.разряд красного
-#define G0       18    // 13+15+17+19 мл.разряд зеленого
-#define G1        5    // 20+22+24+26 ст.разряд зеленого
-#define B0       17    // 21+23+25+27 мл.разряд синего
-#define B1       16    // 22+24+26+28 ст.разряд синего
+#define RED0       21    // 5+7+9+11 мл.разряд красного
+#define RED1       19    // 6+8+10+12 ст.разряд красного
+#define GREEN0     18    // 13+15+17+19 мл.разряд зеленого
+#define GREEN1      5    // 20+22+24+26 ст.разряд зеленого
+#define BLUE0      17    // 21+23+25+27 мл.разряд синего
+#define BLUE1      16    // 22+24+26+28 ст.разряд синего
 #define HSYNCPIN  2    // 32 hsync
 #define DEPIN    15    // 33 vsync
 #define CLOCKPIN  4    // 30 clock
@@ -267,7 +267,7 @@ int show_band_time = SHOW_BAND;
 
 struct band {
   unsigned long long freq; // frequency in Hz
-  char* name;        // name of band
+  char name[5];        // name of band
   int mode;
   int filter;
 };

@@ -26,11 +26,11 @@ void action(){ //обработка нажатий на кнопки
 
 void scroll_wp(){ //сдвиг массива строк "водопада"
 
-      fill_fft=false;//запретить заполнение fft-буфера на время сдвига "водопада" 
+      fill_fft = false;//запретить изменение массива на время сдвига 
       uint8_t tmp = wp_num[WP_LINE-1];
       for (int i=WP_LINE-1;i>0;i--) {wp_num[i] = wp_num[i-1];}
       wp_num[0]=tmp;
-      fill_fft = true;//разрешаем запонение буфера fft
+      fill_fft = true;//разрешаем заполнение массива
 }
 
 void ag(){

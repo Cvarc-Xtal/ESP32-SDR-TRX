@@ -2,9 +2,11 @@
 #include <driver/i2s.h>
 #include <EEPROM.h>
 #include <Wire.h>
-#include <si5351.h> //https://github.com/etherkit/Si5351Arduino //Etherkit SI5351
+#include <si5351.h> //https://github.com/etherkit/Si5351Arduino
 #include <PCF8574.h>//https://github.com/xreef/PCF8574_library
-#include "AiEsp32RotaryEncoder.h" //https://github.com/igorantolic/ai-esp32-rotary-encoder
+#undef DEBUG_PRINTLN
+#undef DEBUG_PRINT
+#include <AiEsp32RotaryEncoder.h> //https://github.com/igorantolic/ai-esp32-rotary-encoder
 #include <ESP32Lib.h>   //https://github.com/bitluni/ESP32Lib
 #include <GfxWrapper.h> //должна быть установлена библиотека GFX-Adafruit https://github.com/adafruit/Adafruit-GFX-Library
 #include <Ressources/CodePage437_8x14.h>
@@ -21,6 +23,9 @@
 #include "tx.h"
 #include "screens.h"
 #include "tools.h"
+
+
+
 
 void setup() {
 
@@ -50,23 +55,25 @@ void setup() {
        Serial.println("SI5351 OK");}
  else{Serial.println("SI5351 not OK");}
  wm8731_init(); 
- i2sinit();//I2S0
  pcf_init(); 
  adc_init();
  fft_init();
  buf_init();
+ i2sinit();//I2S0
  xTaskCreatePinnedToCore(rx_in,  "rxin",  2048, NULL, 100, NULL, 1);//
  xTaskCreatePinnedToCore(rx_out, "rxout", 2048, NULL, 110, NULL, 1);//
  xTaskCreatePinnedToCore(rx_dsp, "rxdsp", 2048, NULL, 220, NULL, 0);//
  xTaskCreatePinnedToCore(tx_in,  "txin",  2048, NULL, 221, NULL, 1);//
  xTaskCreatePinnedToCore(tx_out, "txout", 2048, NULL, 109, NULL, 1);//
  xTaskCreatePinnedToCore(tx_dsp, "txdsp", 2048, NULL, 219, NULL, 0);//
+
  #ifdef VGA
-  tft.init(myMode,R0,R1,G0,G1,B0,B1,HSYNCPIN,DEPIN);
+  tft.init(myMode,RED0,RED1,GREEN0,GREEN1,BLUE0,BLUE1,HSYNCPIN,DEPIN);
  #else
-  tft.init(tft.MODE480x272,R0,R1,G0,G1,B0,B1,HSYNCPIN,DEPIN,CLOCKPIN);
+  tft.init(tft.MODE480x272,RED0,RED1,GREEN0,GREEN1,BLUE0,BLUE1,HSYNCPIN,DEPIN,CLOCKPIN);
  #endif
- start_ok();//нажатие энкодера во время заставки вызывает экран настройки кнопок
+ start_ok();
+ //нажатие энкодера во время заставки вызывает экран настройки кнопок
  //нажатие энкодера во время приема сохраняет основные настройки для их восстановления при последующем включении
 }
 
