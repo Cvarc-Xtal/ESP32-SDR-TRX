@@ -8,7 +8,7 @@ void action(){ //обработка нажатий на кнопки
       if (lkey == 1){numband++;if(numband>N_BANDS-1)numband=0;show_band_time = SHOW_BAND;redraw=true;}
       if (lkey == 2){If_gain++; if(If_gain>31){If_gain=31;}wm8731_set_line_in_volume(If_gain);}
       if (lkey == 3){If_gain--; if(If_gain<1) {If_gain=0; }wm8731_set_line_in_volume(If_gain);}
-      if (lkey == 4){step_freq=step_freq*10;key_rotary=false;if (step_freq > 10000)step_freq=10;}
+      if (lkey == 4){step_freq=step_freq*10;key_rotary=false;if (step_freq > 1000000)step_freq=10;}
       if (lkey == 5){}
       if (rkey == 1){num_filter++;if(num_filter >3)num_filter = 0;}//
       if (rkey == 2){rf_mode++;if(rf_mode>AM)rf_mode=LSB;} // lsb/usb/am
