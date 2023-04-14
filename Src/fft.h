@@ -1,8 +1,8 @@
 
 #include "src/dsp_lib/xtensa_const_structs.h"
 
-xtensa_rfft_fast_instance_f32 rfft;
 xtensa_cfft_instance_f32 cfft;
+xtensa_cfft_instance_f32 rfft;
 
 float wind[NUM_SAMPLE_BUF];
 
@@ -21,8 +21,8 @@ void window_init(float *window, int len)
 
 
 void fft_init(){
-      xtensa_rfft_fast_init_f32(&rfft,NUM_SAMPLE_BUF);
       cfft = xtensa_cfft_sR_f32_len1024;
+      rfft = xtensa_cfft_sR_f32_len512;
       window_init(wind,NUM_SAMPLE_BUF);//Blackman-window
       for(int i=WP_LINE;i>0;i--){wp_num[i-1]=i-1;} //нумеруем массив номеров строк "водопада"
 }
@@ -40,28 +40,32 @@ int IRAM_ATTR sel_c(int val,int max,int mod){
 
 
 void IRAM_ATTR fft_for_display(float* input){
-    
-    static float input_tmp[NUM_SAMPLE_BUF];
-    
+
     for (int i = 0 ; i < NUM_SAMPLE_BUF; i++) {
-      input[i] = input[i] * wind[i];
+      input[i*2] = input[i*2] * wind[i];
+      input[i*2+1] = input[i*2+1] * wind[i];
     }
-    xtensa_rfft_fast_f32(&rfft,input,input_tmp,0);         //БПФ
-    xtensa_cmplx_mag_f32(input_tmp,input,NUM_SAMPLE_BUF/2);// получение реальных значений спектральных составляющих
+    xtensa_cfft_f32(&rfft,input,0,1);
+    for (int i=NUM_SAMPLE_BUF;i<NUM_SAMPLE_BUF*2;i++){
+      input[i]=0;
+    }
+    xtensa_cmplx_mag_f32(input,fft,NUM_SAMPLE_BUF);// получение реальных значений спектральных составляющих
     float sum_fft = 0.0f;
-    float max_fft = 0.0f;
-    float min_fft = 1000.0f;
+    max_fft = 0.0f;
+    float min_fft = 1000000.0f;
+    int k = 0;
     for (int i = 0 ; i < NUM_SAMPLE_BUF/2; i++) {
-      input[i]*=0.001f;
-      if (max_fft < input[i])max_fft=input[i];
-      if (min_fft > input[i])min_fft=input[i];
-      if(input[i]>=700)input[i]=700;
-      //копирование магнитуд в отображаемый буфер,элементы которого постоянно уменьшаются
-      if(input[i]<=fft_inter[i]) input[i]=fft_inter[i];
-      if(input[i]>fft_inter[i])fft_inter[i] = input[i];
-      //заполняем верхнюю строку массива для отображения "водопада"
-      if(fill_fft)wp[wp_num[0]][i]=colors_w[sel_c((int)input[i],FWW,CWW)];
-      sum_fft = sum_fft+input[i];
+        if(i>12){fft[i]*=0.01f;}else{fft[i]=0;}
+        if (max_fft < fft[i])max_fft=fft[i];
+        if (min_fft > fft[i])min_fft=fft[i];
+        if(fft[i]>=700)fft[i]=700;
+        //копирование магнитуд в отображаемый буфер,элементы которого постоянно уменьшаются
+        if(fft[i]<=fft_inter[k]) fft[i]=fft_inter[k];
+        if(fft[i]>fft_inter[k])fft_inter[k] = fft[i];
+        //заполняем верхнюю строку массива для отображения "водопада"
+        if(fill_fft)wp[wp_num[0]][k]=colors_w[sel_c((int)fft[i],FWW,CWW)];
+        sum_fft = sum_fft+fft[i];
+        k++;
     }
     avg_fft = (sum_fft-max_fft)/(NUM_SAMPLE_BUF/2);
     if(max_fft>600  && !dec_Ifgain) dec_Ifgain = true;

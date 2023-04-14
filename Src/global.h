@@ -150,8 +150,9 @@ void start_ok();
 
 uint8_t wp[WP_LINE][NUM_SAMPLE_BUF/2];//массив строк для водопада[кол-во строк][кол-во точек в строке]
 uint8_t wp_num[WP_LINE];          //массив для хранения порядка номеров строк водопада для вывода на экран
-float  fft[NUM_SAMPLE_BUF];       //рабочий fft-буфер
-float  fft_inter[NUM_SAMPLE_BUF]; //отображаемый fft буфер (все элементы постоянно уменьшаются)
+COMPLEX fft_in[NUM_SAMPLE_BUF];   //приемный fft-буфер
+float  fft[NUM_SAMPLE_BUF];       //отображаемый fft-буфер
+float  fft_inter[NUM_SAMPLE_BUF]; //промежуточный fft буфер (все элементы постоянно уменьшаются)
 
 #define PCH (NUM_SAMPLE_BUF/4) //середина отображаемомго спектра ("ПЧ")
 int pos_fft = PCH; //позиция указателя на панораме/спектре
@@ -243,7 +244,7 @@ bool redraw = false;
 bool fill_fft = true;
 bool redraw_freq = false;
 
-bool tuning = false; //
+bool tuning = true; //
 uint8_t rf_mode = 0;//0-LSB, 1-USB, 2-AM
 uint8_t num_filter = 0; //номер текущего фильтра основной селекции
 int32_t smeter = 0;

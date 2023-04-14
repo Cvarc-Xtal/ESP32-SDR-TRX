@@ -23,7 +23,8 @@ void draw_spectr(){//спектр
        }
       if(y>175)y=175;
       tft.fillRect(x*m_screen,175-stolb[i],2,stolb[i],BLACK);
-      y = 4*sqrtf(fft[i]);stolb[i]=y;
+      //y = 4*sqrtf(fft[i]);stolb[i]=y;
+      y = fft[i]/7;stolb[i]=y;
       tft.dotFast(x*m_screen,175-y,colors[16]);
       tft.dotFast(x*m_screen+1,175-y,colors[16]);
       tft.fillRect(x*m_screen,177-y,2,y,col_s);

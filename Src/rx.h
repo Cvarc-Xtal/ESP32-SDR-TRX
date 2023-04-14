@@ -27,9 +27,10 @@ void IRAM_ATTR rx_in(void * pvParameters){
           for (int i=0; i<NUM_SAMPLE_BUF; i++) { 
             workbuf_in[i+NUM_SAMPLE_BUF].re = workbuf_tmp[i].re = (float)(input_buffer[i].re>>12);
             workbuf_in[i+NUM_SAMPLE_BUF].im = workbuf_tmp[i].im = (float)(input_buffer[i].im>>12);
-            fft[i] = ((workbuf_tmp[i].re+workbuf_tmp[i].im));//заполняем fft-буфер для панорамы и спектра
+            fft_in[i].re = workbuf_tmp[i].re;//заполняем fft-буфер для панорамы и спектра
+            fft_in[i].im = workbuf_tmp[i].im;
           }
-          fft_for_display((float*)&fft);//вычислить магнитуды для спектра и "водопада" для последующего отображения
+          fft_for_display((float*)&fft_in);//вычислить магнитуды для спектра и "водопада" для последующего отображения
           #ifdef DEBUG_RUN 
             if (access_in_run){rx_in_run_result = micros()-rx_time;access_in_run=false;}
           #endif
