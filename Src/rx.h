@@ -54,6 +54,7 @@ void IRAM_ATTR rx_out(void * pvParameters){
             output_buffer[i].re = speak_out ? ((int)(workbuf_out[i].re*agc_koeff))<<12: 0;
             output_buffer[i].im = speak_out ? ((int)(workbuf_out[i].im*agc_koeff))<<12: 0;
           }
+          xSemaphoreGive(xRXIN);
           if(current_mode==RX_MODE)i2s_write(I2S_NUM_0, &output_buffer, sizeof(output_buffer), &readsize, portMAX_DELAY );//вывод звука
           #ifdef DEBUG_RUN 
             if (access_out_run){rx_out_run_result = micros()-rx_time;access_out_run=false;}
@@ -137,7 +138,7 @@ void IRAM_ATTR rx_dsp(void *pvParameters){
           #ifdef DEBUG_RUN 
             if (access_dsp_run){rx_dsp_run_result = micros()-rx_time;access_dsp_run=false;}
           #endif
-          if(current_mode == RX_MODE){xSemaphoreGive(xRXIN);xSemaphoreGive(xRXOUT);} 
+          if(current_mode == RX_MODE){xSemaphoreGive(xRXOUT);} 
           if (smeter > old_smeter){old_smeter=smeter;}
           if(old_smeter>70)old_smeter=70;
     }
