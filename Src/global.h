@@ -158,6 +158,7 @@ float  fft_inter[NUM_SAMPLE_BUF]; //промежуточный fft буфер (�
 int pos_fft = PCH; //позиция указателя на панораме/спектре
 int m_screen = 2; // множитель масштабирования панорамы/спектра
 
+float max_fft = 0.0f;
 float avg_fft = 0.0f;
 bool dec_Ifgain = false;
 bool inc_Ifgain = false;
